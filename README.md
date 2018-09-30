@@ -1,7 +1,9 @@
 ##Angular5-Blog-Admin
 ![blog](./snapshot/blog_admin.png)
 
-Angular5+Ant Design编写的简易版博客后台管理系统,预览地址[博客后台管理系统](http://admin.yinguiw.com)
+Angular5+Ant Design编写的简易版博客后台管理系统
+预览地址[博客后台管理系统](http://admin.yinguiw.com)
+测试账号密码 guest
 
 + 项目创建基于 [Angular CLI](https://github.com/angular/angular-cli) version 1.7.2.
 + 当前项目目录下, 使用 `npm install` 安装依赖
