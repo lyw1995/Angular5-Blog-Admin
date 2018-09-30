@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="article_content" class="article_content clearfix csdn-tracking-statistics" data-pid="blog" data-mod="popu_307"
+     data-dsm="post" >
+  <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/ck_htmledit_views-e2445db1a8.css">
+  <div class="htmledit_views">
+
+<span style="line-height:1.5;"><span style="background-color:rgb(255,255,255);"><span
+  style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:center;line-height:19px;">&nbsp;</span><span
+  style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:center;line-height:19px;"><span
+  style="line-height:1.5;">——————————</span></span><span
+  style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:center;line-height:19px;">&nbsp;</span><a
+  href="http://edu.csdn.net/" rel="nofollow"
+  style="text-decoration:none;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:center;line-height:19px;"
+  target="_blank">ASP.Net+Android+IOS开发</a><span
+  style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:center;line-height:19px;">、</span><a
+  href="http://edu.csdn.net/" rel="nofollow"
+  style="text-decoration:none;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:center;line-height:19px;"
+  target="_blank">.Net培训</a><span
+  style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:center;line-height:19px;">、期待与您交流！</span><span
+  style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:center;line-height:19px;"><span
+  style="line-height:1.5;">——————————</span></span><br>
+银行业务调度系统逻辑分析<br><br><br>
+1) &nbsp; &nbsp; &nbsp; &nbsp;银行内有6个业务窗口，1 - 4号窗口为普通窗口，5号窗口为快速窗口，6号窗口为VIP窗口。<br>
+2) &nbsp; &nbsp; &nbsp; &nbsp;有三种对应类型的客户：VIP客户，普通客户，快速客户（办理如交水电费、电话费之类业务的客户）。<br>
+3) &nbsp; &nbsp; &nbsp; &nbsp;异步随机生成各种类型的客户，生成各类型用户的概率比例为：<br>
+VIP客户 ：普通客户 ：快速客户 &nbsp;= &nbsp;1 ：6 ：3。<br>
+4) &nbsp; &nbsp; &nbsp; &nbsp;客户办理业务所需时间有最大值和最小值，在该范围内随机设定每个VIP客户以及普通客户办理业务所需的时间，快速客户办理业务所需时间为最小值（提示：办理业务的过程可通过线程Sleep的方式模拟）。<br>
+5) &nbsp; &nbsp; &nbsp; &nbsp;各类型客户在其对应窗口按顺序依次办理业务。<br>
+6) &nbsp; &nbsp; &nbsp; &nbsp;当VIP（6号）窗口和快速业务（5号）窗口没有客户等待办理业务的时候，这两个窗口可以处理普通客户的业务，而一旦有对应的客户等待办理业务的时候，则优先处理对应客户的业务。<br></span></span>
+    <p>7) &nbsp; &nbsp; &nbsp; &nbsp;随机生成客户时间间隔以及业务办理时间最大值和最小值自定，可以设置。</p>
+    <p><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">二、面向对象的分析与设计</span><br
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);"><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;1、有三种对应类型的客户：VIP客户，普通客户，快速客户，异步随机生成各种类型的客户，各类型客户在其对应窗口按顺序依次办理业务。</span><br
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);"><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;(1)、首先，经常在银行办理业务的人更有利于理解本系统，例如，我经常陪老婆跑银行，对银行的这个业务算是比较熟悉了，我知道每一个客户其实就是由银行的一个取号机器产生号码的方式来表示的。所以，我想到要有一个号码管理器对象，让这个对象不断地产生号码，就等于随机生成了客户。</span><br
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);"><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;(2)、由于有三类客户，每类客户的号码编排都是完全独立的，所以，我想到本系统一共要产生三个号码管理器对象，各自管理一类用户的排队号码。这三个号码管理器对象统一由一个号码机器进行管理，这个号码机器在整个系统中始终只能有一个，所以，它要被设计成单例。</span><br
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);"><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;2、各类型客户在其对应窗口按顺序依次办理业务，准确地说，应该是窗口依次叫号。</span><br
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);"><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;(1)、各个窗口怎么知道该叫哪一个号了呢？它一定是问的相应的号码管理器，即服务窗口每次找号码管理器获取当前要被服务的号码。</span><br
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);"><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;&nbsp;</span><span
+      style="color:rgb(70,70,70);font-family:simsun;font-size:14px;line-height:21px;background-color:rgb(188,211,229);">&nbsp;(2)、如果我不是多次亲身经历银行的这种业务，再加之积累了大量面向对象的应用开发经验，我也不知道能否轻松进行这种设计，能否发掘出其中隐含的对象信息，我真说不出具体的经验是什么，就是日积月累出来的一种感觉。难道这就是传说中的：“只可意会，不可言传？”</span><br>
+    </p>
+    <p><br></p>
+    <p><br></p>
+    <p></p>
+    <pre onclick="hljs.copyCode(event)"><code class="language-java hljs"><ol class="hljs-ln"><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"><span
+      class="hljs-keyword">package</span> com.itcast.bank;</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                   data-line-number="3"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-keyword">import</span> java.util.ArrayList;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"><span
+      class="hljs-keyword">import</span> java.util.List;</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                   data-line-number="6"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-comment">//号码生成器</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-keyword">public</span> <span
+      class="hljs-class"><span class="hljs-keyword">class</span> <span
+      class="hljs-title">NumberManager</span></span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                   data-line-number="9"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-comment">//队列</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="10"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-keyword">private</span> List&lt;Integer&gt; queueService = <span
+      class="hljs-keyword">new</span> ArrayList&lt;Integer&gt;();</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="11"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-comment">//服务号码</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="12"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> serviceNumber=<span
+      class="hljs-number">1</span>;</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                          data-line-number="13"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-comment">//生成新的服务号码</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="14"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-function"><span
+      class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> Integer <span
+      class="hljs-title">generateNewNumber</span><span class="hljs-params">()</span></span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="15"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="16"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		queueService.add(serviceNumber);</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="17"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		<span class="hljs-keyword">return</span> serviceNumber++;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="18"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="19"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-comment">//获取服务号码</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="20"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-function"><span
+      class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> Integer <span
+      class="hljs-title">getServiceNumber</span><span class="hljs-params">()</span></span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="21"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="22"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		<span class="hljs-keyword">return</span> queueService.size()&gt;<span
+      class="hljs-number">0</span>?queueService.remove(<span class="hljs-number">0</span>):<span class="hljs-keyword">null</span>;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="23"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="24"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">}</div></div></li></ol></code><div class="hljs-button" data-title="复制"></div></pre>
+    <br>
+    <pre onclick="hljs.copyCode(event)"><code class="language-java hljs"><ol class="hljs-ln"><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"><span
+      class="hljs-keyword">package</span> com.itcast.bank;</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line"><span class="hljs-comment">//取号器  单例</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span
+      class="hljs-title">NumberMachine</span></span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                   data-line-number="5"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-function"><span
+      class="hljs-keyword">private</span> <span class="hljs-title">NumberMachine</span><span
+      class="hljs-params">()</span></span>{}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-comment">//普通客户</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> NumberManager COMMONMANAGER = <span
+      class="hljs-keyword">new</span> NumberManager();</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-comment">//快速客户</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> NumberManager EXPRESSMANAGER = <span
+      class="hljs-keyword">new</span> NumberManager();</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="10"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-comment">//vip客户</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="11"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> NumberManager VIPMANAGER = <span
+      class="hljs-keyword">new</span> NumberManager();</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="12"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span
+      class="hljs-keyword">final</span> NumberMachine NUMBER_MACHINE=<span class="hljs-keyword">new</span> NumberMachine();</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="13"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-comment">//获取实例s</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="14"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-function"><span
+      class="hljs-keyword">public</span> <span class="hljs-keyword">static</span>  NumberMachine <span
+      class="hljs-title">getInstance</span><span class="hljs-params">()</span></span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="15"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="16"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		<span class="hljs-keyword">return</span> NUMBER_MACHINE;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="17"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="18"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-function"><span class="hljs-keyword">public</span>  NumberManager <span
+      class="hljs-title">getCOMMONMANAGER</span><span class="hljs-params">()</span></span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="19"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="20"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		<span class="hljs-keyword">return</span> COMMONMANAGER;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="21"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="22"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-function"><span class="hljs-keyword">public</span>  NumberManager <span
+      class="hljs-title">getEXPRESSMANAGER</span><span class="hljs-params">()</span></span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="23"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="24"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		<span class="hljs-keyword">return</span> EXPRESSMANAGER;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="25"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="26"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-function"><span class="hljs-keyword">public</span>  NumberManager <span
+      class="hljs-title">getVIPMANAGER</span><span class="hljs-params">()</span></span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="27"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="28"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		<span class="hljs-keyword">return</span> VIPMANAGER;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="29"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="30"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">}</div></div></li></ol></code><div class="hljs-button" data-title="复制"></div></pre>
+    <br>
+    <pre onclick="hljs.copyCode(event)"><code class="language-java hljs"><ol class="hljs-ln hundred"
+                                                                             style="width:1091px"><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"><span
+      class="hljs-keyword">package</span> com.itcast.bank;</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                   data-line-number="3"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"><span
+      class="hljs-keyword">import</span> java.util.Random;</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line"><span class="hljs-keyword">import</span> java.util.concurrent.Executors;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span
+      class="hljs-title">ServiceWindow</span></span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                   data-line-number="8"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-comment">//客户类型</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-keyword">private</span> CustomerType customerType=CustomerType.COMMON;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="10"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-comment">//窗口编号</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="11"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-keyword">private</span> <span
+      class="hljs-keyword">int</span> WindowID=<span class="hljs-number">1</span>;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="12"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-function"><span
+      class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span
+      class="hljs-title">setCustomerType</span><span class="hljs-params">(CustomerType customerType)</span></span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="13"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="14"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		<span class="hljs-keyword">this</span>.customerType = customerType;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="15"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="16"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span
+      class="hljs-keyword">void</span> <span class="hljs-title">setWindowID</span><span class="hljs-params">(<span
+      class="hljs-keyword">int</span> windowID)</span></span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="17"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                     data-line-number="18"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		<span
+      class="hljs-keyword">this</span>.WindowID = windowID;</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="19"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	}</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                     data-line-number="20"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-comment">//启动服务</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="21"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-function"><span
+      class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span
+      class="hljs-title">start</span><span class="hljs-params">()</span></span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="22"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="23"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		Executors.newSingleThreadExecutor().execute(<span class="hljs-keyword">new</span> Runnable()</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="24"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="25"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">			</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                        data-line-number="26"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			<span class="hljs-meta">@Override</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="27"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			<span class="hljs-function"><span
+      class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span
+      class="hljs-params">()</span></span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="28"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">			{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                         data-line-number="29"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">				<span class="hljs-keyword">while</span> (<span
+      class="hljs-keyword">true</span>)</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="30"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="31"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">					<span class="hljs-keyword">switch</span> (customerType)</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="32"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">					{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="33"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">					<span class="hljs-keyword">case</span> COMMON:<span
+      class="hljs-comment">//普通客户</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="34"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">						commonservice();</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="35"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">						<span class="hljs-keyword">break</span>;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="36"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">					<span class="hljs-keyword">case</span> EXPRESS:<span
+      class="hljs-comment">//快速客户</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="37"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">						expressservice();</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="38"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">						<span class="hljs-keyword">break</span>;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="39"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">					<span class="hljs-keyword">case</span> VIP:<span
+      class="hljs-comment">//vip客户</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="40"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">						vipservice();</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="41"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">						<span class="hljs-keyword">break</span>;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="42"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">					}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="43"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">					</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="44"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="45"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">			}</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                         data-line-number="46"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="47"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		});</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                         data-line-number="48"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="49"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line"><span class="hljs-comment">//普通客户服务</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="50"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-function"><span class="hljs-keyword">private</span> <span
+      class="hljs-keyword">void</span> <span class="hljs-title">commonservice</span><span class="hljs-params">()</span></span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="51"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="52"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		String windowName=<span class="hljs-string">"第"</span>+WindowID+<span
+      class="hljs-string">"号"</span>+customerType+<span class="hljs-string">"窗口"</span>;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="53"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		System.out.println(windowName+<span class="hljs-string">"正在获取任务"</span> );</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="54"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		<span class="hljs-comment">//获取要服务的号码</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="55"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		Integer number=NumberMachine.getInstance().getCOMMONMANAGER().getServiceNumber();</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="56"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		<span class="hljs-keyword">if</span>(number != <span
+      class="hljs-keyword">null</span>)</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="57"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                       data-line-number="58"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			System.out.println(windowName+<span
+      class="hljs-string">"正在为"</span>+number+<span class="hljs-string">"号普通客户服务"</span>);</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="59"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			<span class="hljs-keyword">int</span> serverTime=<span
+      class="hljs-keyword">new</span> Random().nextInt(Constant.MAX_SERVICETIME-Constant.MIN_SERVICETIME)+<span
+      class="hljs-number">1</span> +<span class="hljs-number">1000</span>;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="60"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			<span class="hljs-keyword">try</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="61"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="62"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				Thread.sleep(serverTime );<span class="hljs-comment">//服务耗时</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="63"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			} <span class="hljs-keyword">catch</span> (Exception e)</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="64"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="65"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				e.printStackTrace();</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="66"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">			}</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                         data-line-number="67"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			System.out.println(windowName+<span
+      class="hljs-string">"为"</span>+number+<span class="hljs-string">"号普通客户服务,耗时"</span>+serverTime/<span
+      class="hljs-number">1000</span>+<span class="hljs-string">"秒"</span>);</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="68"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		}<span class="hljs-keyword">else</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="69"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="70"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">			System.out.println(windowName+<span
+      class="hljs-string">"没有获取普通任务,正在空闲一秒"</span>);</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="71"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">			<span class="hljs-keyword">try</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="72"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">			{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                         data-line-number="73"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">				Thread.sleep(<span class="hljs-number">1000</span>);</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="74"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			} <span class="hljs-keyword">catch</span> (Exception e)</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="75"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="76"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				e.printStackTrace();</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="77"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">			}</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                         data-line-number="78"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="79"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	}</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                     data-line-number="80"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-comment">//快速客户服务</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="81"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-function"><span
+      class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span
+      class="hljs-title">expressservice</span><span class="hljs-params">()</span></span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="82"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="83"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		String windowName=<span class="hljs-string">"第"</span>+WindowID+<span
+      class="hljs-string">"号"</span>+customerType+<span class="hljs-string">"窗口"</span>;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="84"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		System.out.println(windowName+<span class="hljs-string">"正在获取任务"</span> );</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="85"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		<span
+      class="hljs-comment">//获取要快速客户服务号码</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="86"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		Integer number=NumberMachine.getInstance().getCOMMONMANAGER().getServiceNumber();</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="87"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		<span class="hljs-keyword">if</span>(number != <span
+      class="hljs-keyword">null</span>)</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="88"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                       data-line-number="89"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			System.out.println(windowName+<span
+      class="hljs-string">"正在为"</span>+number+<span class="hljs-string">"号快速客户服务"</span>);</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="90"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			<span class="hljs-keyword">try</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="91"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="92"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				Thread.sleep(Constant.MIN_SERVICETIME );<span
+      class="hljs-comment">//服务耗时1秒</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="93"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">			} <span class="hljs-keyword">catch</span> (Exception e)</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="94"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="95"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				e.printStackTrace();</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="96"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">			}</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                         data-line-number="97"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			System.out.println(windowName+<span
+      class="hljs-string">"为"</span>+number+<span class="hljs-string">"号快速客户服务,耗时"</span>+Constant.MIN_SERVICETIME/<span
+      class="hljs-number">1000</span>+<span class="hljs-string">"秒"</span>);</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="98"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		}<span class="hljs-keyword">else</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="99"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="100"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">			System.out.println(windowName+<span class="hljs-string">"没有获取到任务"</span>);</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="101"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			commonservice();<span
+      class="hljs-comment">//闲时可以帮普通客户处理业务</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="102"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		}</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                       data-line-number="103"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="104"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line"><span class="hljs-comment">//vip客户服务</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="105"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-function"><span class="hljs-keyword">private</span> <span
+      class="hljs-keyword">void</span> <span class="hljs-title">vipservice</span><span
+      class="hljs-params">()</span></span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="106"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                     data-line-number="107"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		String windowName=<span class="hljs-string">"第"</span>+WindowID+<span
+      class="hljs-string">"号"</span>+customerType+<span class="hljs-string">"窗口"</span>;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="108"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		System.out.println(windowName+<span class="hljs-string">"正在获取任务"</span> );</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="109"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		<span
+      class="hljs-comment">//获取要服务的vip客户</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="110"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		Integer number=NumberMachine.getInstance().getCOMMONMANAGER().getServiceNumber();</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="111"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		<span class="hljs-keyword">if</span>(number != <span
+      class="hljs-keyword">null</span>)</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="112"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                       data-line-number="113"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			System.out.println(windowName+<span
+      class="hljs-string">"正在为"</span>+number+<span class="hljs-string">"号VIP客户服务"</span>);</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="114"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			<span class="hljs-keyword">int</span> serverTime=<span
+      class="hljs-keyword">new</span> Random().nextInt(Constant.MAX_SERVICETIME-Constant.MIN_SERVICETIME)+<span
+      class="hljs-number">1</span> +<span class="hljs-number">1000</span>;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="115"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			<span class="hljs-keyword">try</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="116"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="117"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				Thread.sleep(serverTime );<span class="hljs-comment">//服务耗时时间</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="118"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			} <span class="hljs-keyword">catch</span> (Exception e)</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="119"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="120"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				e.printStackTrace();</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="121"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">			}</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                         data-line-number="122"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			System.out.println(windowName+<span
+      class="hljs-string">"为"</span>+number+<span class="hljs-string">"号VIP客户服务,耗时"</span>+serverTime/<span
+      class="hljs-number">1000</span>+<span class="hljs-string">"秒"</span>);</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="123"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		}<span class="hljs-keyword">else</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="124"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="125"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">			System.out.println(windowName+<span class="hljs-string">"没有获取到任务"</span>);</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="126"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			commonservice();<span
+      class="hljs-comment">//闲时可以帮普通客户处理业务</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="127"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		}</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                       data-line-number="128"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="129"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">}</div></div></li></ol></code><div class="hljs-button" data-title="复制"></div></pre>
+    <br>
+    <pre onclick="hljs.copyCode(event)"><code class="language-java hljs"><ol class="hljs-ln"><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"><span
+      class="hljs-keyword">package</span> com.itcast.bank;</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line"><span class="hljs-comment">//枚举客户类型</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line"><span class="hljs-keyword">public</span> <span class="hljs-keyword">enum</span> CustomerType</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	COMMON,EXPRESS,VIP; </div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-meta">@Override</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-function"><span class="hljs-keyword">public</span> String <span
+      class="hljs-title">toString</span><span class="hljs-params">()</span></span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		<span class="hljs-keyword">return</span> <span
+      class="hljs-keyword">this</span>==COMMON?<span class="hljs-string">"普通客户"</span>:<span
+      class="hljs-keyword">this</span>==EXPRESS?<span class="hljs-string">"快速客户"</span>:<span
+      class="hljs-string">"VIP"</span>;</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="10"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	}</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                     data-line-number="11"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">}</div></div></li></ol></code><div class="hljs-button"
+                                                                                        data-title="复制"></div></pre>
+    <br>
+    <pre onclick="hljs.copyCode(event)"><code class="language-java hljs"><ol class="hljs-ln"><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"><span
+      class="hljs-keyword">package</span> com.itcast.bank;</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line"><span class="hljs-comment">//常量类</span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span
+      class="hljs-title">Constant</span></span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">{</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                   data-line-number="5"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-keyword">public</span> <span
+      class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> MAX_SERVICETIME=<span
+      class="hljs-number">10000</span>;<span class="hljs-comment">//最大服务时间</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-keyword">public</span> <span
+      class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> MIN_SERVICETIME=<span
+      class="hljs-number">1000</span>;<span class="hljs-comment">//最小服务时间</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-keyword">public</span> <span
+      class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> COMMON_GENERATETIME=<span
+      class="hljs-number">1</span>;<span class="hljs-comment">//普通客户号码产生时间</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-keyword">public</span> <span
+      class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> EXPRESS_GENERATETIME=<span
+      class="hljs-number">3</span>;<span class="hljs-comment">//快速客户号码产生时间</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	<span class="hljs-keyword">public</span> <span
+      class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> VIP_GENERATETIME=<span
+      class="hljs-number">6</span>;<span class="hljs-comment">//vip客户号码产生时间</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="10"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">}</div></div></li></ol></code><div class="hljs-button"
+                                                                                        data-title="复制"></div></pre>
+    <br>
+    <pre onclick="hljs.copyCode(event)"><code class="language-java hljs"><ol class="hljs-ln" style="width:1191px"><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"><span
+      class="hljs-keyword">package</span> com.itcast.bank;</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line"> </div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                   data-line-number="3"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-keyword">import</span> java.util.concurrent.Executors;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-keyword">import</span> java.util.concurrent.TimeUnit;</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-comment">//运行类</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-keyword">public</span> <span
+      class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MainClass</span></span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	<span class="hljs-function"><span class="hljs-keyword">public</span> <span
+      class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span
+      class="hljs-title">main</span><span class="hljs-params">(String[] args)</span></span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="10"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		<span class="hljs-comment">//4个普通窗口</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="11"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		<span class="hljs-keyword">for</span> (<span
+      class="hljs-keyword">int</span> i = <span class="hljs-number">1</span>; i &lt; <span class="hljs-number">5</span>; i++)</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="12"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="13"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">			ServiceWindow commonWindow=<span class="hljs-keyword">new</span> ServiceWindow();</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="14"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			commonWindow.setWindowID(i);</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="15"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">			commonWindow.start();</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="16"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="17"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		<span class="hljs-comment">//快速窗口</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="18"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		ServiceWindow expressWindow=<span
+      class="hljs-keyword">new</span> ServiceWindow();</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="19"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		expressWindow.setCustomerType(CustomerType.EXPRESS);</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="20"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		expressWindow.setWindowID(<span class="hljs-number">5</span>);</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="21"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		expressWindow.start();</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="22"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		<span class="hljs-comment">//vip窗口</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="23"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		ServiceWindow vipWindow=<span class="hljs-keyword">new</span> ServiceWindow();</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="24"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		vipWindow.setCustomerType(CustomerType.VIP);</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="25"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		vipWindow.setWindowID(<span
+      class="hljs-number">6</span>);</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="26"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		vipWindow.start();</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="27"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                      data-line-number="28"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="29"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">		<span class="hljs-comment">//普通客户拿号</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="30"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		Executors.newScheduledThreadPool(<span
+      class="hljs-number">1</span>).scheduleAtFixedRate(</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="31"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				<span class="hljs-keyword">new</span> Runnable()</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="32"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">				{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="33"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">					</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="34"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">					<span class="hljs-meta">@Override</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="35"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">					<span class="hljs-function"><span class="hljs-keyword">public</span> <span
+      class="hljs-keyword">void</span> <span class="hljs-title">run</span><span
+      class="hljs-params">()</span></span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="36"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">					{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="37"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">						Integer number = NumberMachine.getInstance().getCOMMONMANAGER().generateNewNumber();</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="38"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">						<span class="hljs-keyword">if</span>(number!=<span
+      class="hljs-keyword">null</span>)</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="39"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">							System.out.println(number+<span
+      class="hljs-string">"号普通客户正在等待服务..."</span>);</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="40"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">					}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="41"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				}, </div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="42"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				<span class="hljs-number">0</span>, </div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="43"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">				Constant.COMMON_GENERATETIME, </div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="44"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">				TimeUnit.SECONDS);</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="45"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		<span class="hljs-comment">//快速客户拿号</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="46"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		Executors.newScheduledThreadPool(<span
+      class="hljs-number">1</span>).scheduleAtFixedRate(</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="47"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				<span class="hljs-keyword">new</span> Runnable()</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="48"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">				{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="49"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">					</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="50"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">					<span class="hljs-meta">@Override</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="51"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">					<span class="hljs-function"><span class="hljs-keyword">public</span> <span
+      class="hljs-keyword">void</span> <span class="hljs-title">run</span><span
+      class="hljs-params">()</span></span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="52"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">					{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="53"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">						Integer number = NumberMachine.getInstance().getEXPRESSMANAGER().generateNewNumber();</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="54"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">						<span class="hljs-keyword">if</span>(number!=<span
+      class="hljs-keyword">null</span>)</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="55"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">							System.out.println(number+<span
+      class="hljs-string">"号快速客户正在等待服务..."</span>);</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="56"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">					}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="57"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				}, </div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="58"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				<span class="hljs-number">0</span>, </div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="59"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">				Constant.EXPRESS_GENERATETIME, </div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="60"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">				TimeUnit.SECONDS);</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="61"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		<span class="hljs-comment">//Vip客户拿号</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="62"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">		Executors.newScheduledThreadPool(<span
+      class="hljs-number">1</span>).scheduleAtFixedRate(</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="63"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				<span class="hljs-keyword">new</span> Runnable()</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="64"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">				{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="65"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">					</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="66"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">					<span class="hljs-meta">@Override</span></div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="67"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">					<span class="hljs-function"><span class="hljs-keyword">public</span> <span
+      class="hljs-keyword">void</span> <span class="hljs-title">run</span><span
+      class="hljs-params">()</span></span></div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="68"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">					{</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="69"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">						Integer number = NumberMachine.getInstance().getVIPMANAGER().generateNewNumber();</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="70"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">						<span class="hljs-keyword">if</span>(number!=<span
+      class="hljs-keyword">null</span>)</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="71"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">							System.out.println(number+<span class="hljs-string">"号VIP客户正在等待服务..."</span>);</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="72"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">					}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="73"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				}, </div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="74"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">				<span class="hljs-number">0</span>, </div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="75"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">				Constant.VIP_GENERATETIME, </div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="76"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">				TimeUnit.SECONDS);</div></div></li><li><div
+      class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="77"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">	}</div></div></li><li><div class="hljs-ln-numbers"><div
+      class="hljs-ln-line hljs-ln-n" data-line-number="78"></div></div><div class="hljs-ln-code"><div
+      class="hljs-ln-line">	</div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n"
+                                                                                    data-line-number="79"></div></div><div
+      class="hljs-ln-code"><div class="hljs-ln-line">}</div></div></li></ol></code><div class="hljs-button"
+                                                                                        data-title="复制"></div></pre>
+    <br><br>
+    <p><span style="line-height:1.5;"><span style="background-color:rgb(255,255,255);"><span
+      style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:center;line-height:19px;">&nbsp;</span><span
+      style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:center;line-height:19px;"><span
+      style="line-height:1.5;">——————————</span></span><span
+      style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:center;line-height:19px;">&nbsp;</span><a
+      href="http://edu.csdn.net/" rel="nofollow"
+      style="text-decoration:none;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:center;line-height:19px;"
+      target="_blank">ASP.Net+Android+IOS开发</a><span
+      style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:center;line-height:19px;">、</span><a
+      href="http://edu.csdn.net/" rel="nofollow"
+      style="text-decoration:none;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:center;line-height:19px;"
+      target="_blank">.Net培训</a><span
+      style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:center;line-height:19px;">、期待与您交流！</span><span
+      style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;text-align:center;line-height:19px;"><span
+      style="line-height:1.5;">——————————</span></span><br></span></span></p>
+  </div>
+</div>
+</body>
+</html>

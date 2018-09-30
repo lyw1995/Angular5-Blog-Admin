@@ -1,0 +1,48 @@
+<p></p>
+<nz-card nzTitle="小小工具">
+  <div>
+    <div nz-row [nzGutter]="6" *ngIf="extendData">
+      <div nz-col [nzSpan]="6">
+        <nz-card nzTitle="总独立IP(个)">
+          <p>{{extendData['total_ip_count']}}</p>
+        </nz-card>
+      </div>
+      <div nz-col [nzSpan]="6">
+        <nz-card nzTitle="日活IP({{extendData['date']}})">
+          <p>{{extendData['today_ip_count']}}</p>
+        </nz-card>
+      </div>
+      <div nz-col [nzSpan]="6">
+        <nz-card nzTitle="总文章数(篇)">
+          <p>{{extendData['articles_count']}}</p>
+        </nz-card>
+      </div>
+      <div nz-col [nzSpan]="6">
+        <nz-card nzTitle="总访问量(PV)">
+          <p>{{extendData['total_pv']}}</p>
+        </nz-card>
+      </div>
+    </div>
+    <p></p>
+    <div nz-row [nzGutter]="12" *ngIf="isAdmin">
+      <div nz-col [nzSpan]="12">
+        <nz-card nzTitle="CSDN博客采集">
+          <input nz-input placeholder="请输入CSDN博客链接" [(ngModel)]="csdnUrl">
+          <p style="margin-top: 10px;">
+            <span>文章类型:</span>
+            <nz-select style="min-width: 100px;margin-left: 10px;" [(ngModel)]="selectedOrigin" [nzSize]="'default'">
+              <nz-option *ngFor="let item of origin" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+            </nz-select>
+            <span style="margin-left: 20px;">个人分类:</span>
+            <nz-select style="min-width: 150px;margin-left: 10px;" [(ngModel)]="selectedCategory" [nzSize]="'default'">
+              <nz-option *ngFor="let item of categorys" [nzLabel]="item['cname']" [nzValue]="item['cid']"></nz-option>
+            </nz-select>
+          </p>
+          <button nz-button nzType="danger" style="margin-right: 20px;" (click)="CreateOfCsdn('publish')">一键采集至发布
+          </button>
+          <button nz-button nzType="danger" style="margin-right: 20px;" (click)="CreateOfCsdn('draft')">一键采集至草稿</button>
+        </nz-card>
+      </div>
+    </div>
+  </div>
+</nz-card>

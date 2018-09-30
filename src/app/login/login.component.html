@@ -1,0 +1,40 @@
+<!--<p>-->
+<!--login works!-->
+<!--</p>-->
+<!--<button routerLink="/register">注册</button>-->
+<!--<button routerLink="/admin">管理界面</button>-->
+
+<div nz-row nzSpan="24" class="login-form-container">
+  <form nz-form [formGroup]="validateForm" class="login-form" (ngSubmit)="submitForm()">
+    <nz-form-item>
+      <nz-form-control>
+        <nz-input-group nzPrefixIcon="anticon anticon-user">
+          <input type="text" nz-input formControlName="userName" placeholder="用户名">
+        </nz-input-group>
+        <nz-form-explain *ngIf="validateForm.get('userName').dirty && validateForm.get('userName').errors">
+          请输入用户名(字母开头5-12位)!
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-control>
+        <nz-input-group nzPrefixIcon="anticon anticon-lock">
+          <input type="password" nz-input formControlName="password" placeholder="用户密码">
+        </nz-input-group>
+        <nz-form-explain *ngIf="validateForm.get('password').dirty && validateForm.get('password').errors">
+          请输入用户密码(字母开头5-16位)!
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-control>
+        <label nz-checkbox formControlName="remember">
+          <span>记住密码</span>
+        </label>
+        <a class="login-form-forgot" class="login-form-forgot" (click)="forgetPassword()">忘记密码</a>
+        <button nz-button class="login-form-button" [nzType]="'primary'" >登录</button>
+        <button nz-button class="login-form-button" [nzType]="'danger'" routerLink="/register">注册</button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</div>

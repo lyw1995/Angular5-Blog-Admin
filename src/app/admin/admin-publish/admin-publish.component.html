@@ -1,0 +1,46 @@
+<p></p>
+<nz-card nzTitle="发布文章">
+  <div>
+    <nz-form-label [nzSm]="24" [nzXs]="24" nzRequired style="text-align: left">文章标题</nz-form-label>
+    <nz-form-control [nzSm]="24" [nzXs]="24">
+      <input nz-input placeholder="请输入文章标题" [(ngModel)]="title">
+    </nz-form-control>
+    <nz-form-label [nzSm]="24" [nzXs]="24" nzRequired style="text-align: left">编辑内容</nz-form-label>
+    <nz-form-control [nzSm]="24" [nzXs]="24">
+      <div [froalaEditor]="option" [(froalaModel)]="froalaText"></div>
+    </nz-form-control>
+  </div>
+  <!--<button (click)="publishArticle()">发布文章</button>-->
+  <p>&nbsp;</p>
+  <p>
+    <span>文章类型:</span>
+    <nz-select style="min-width: 100px;margin-left: 10px;" [(ngModel)]="selectedOrigin" [nzSize]="'default'">
+      <nz-option *ngFor="let item of origin" [nzLabel]="item.label" [nzValue]="item.value"></nz-option>
+    </nz-select>
+    <span style="margin-left: 20px;">个人分类:</span>
+    <nz-select style="min-width: 150px;margin-left: 10px;" [(ngModel)]="selectedCategory" [nzSize]="'default'">
+      <nz-option *ngFor="let item of categorys" [nzLabel]="item['cname']" [nzValue]="item['cid']"></nz-option>
+    </nz-select>
+  </p>
+  <p>&nbsp;</p>
+
+  <div *ngIf="isAdmin">
+    <ng-container *ngIf="refer == ''">
+      <button nz-button nzType="primary" style="margin-right: 20px;" (click)="publish()">发布文章</button>
+      <button nz-button nzType="danger" style="margin-right: 20px;" (click)="draft()">保存草稿</button>
+    </ng-container>
+    <ng-container *ngIf="refer == 'publish'">
+      <button nz-button nzType="primary" style="margin-right: 20px;" (click)="publishArticle()">发布文章</button>
+    </ng-container>
+    <ng-container *ngIf="refer == 'draft'">
+      <button nz-button nzType="primary" style="margin-right: 20px;" (click)="publishArticle()">发布文章</button>
+      <button nz-button nzType="danger" style="margin-right: 20px;" (click)="saveArticle()">保存修改</button>
+    </ng-container>
+    <nz-popconfirm nzTitle="您正在编辑状态,确定要取消编辑吗??" nzOkText="确认" nzCancelText="取消" [nzCondition]="isShow()"
+                   (nzOnConfirm)="goBack()">
+      <button nz-popconfirm nz-button nzType="default">返回</button>
+    </nz-popconfirm>
+  </div>
+
+</nz-card>
+

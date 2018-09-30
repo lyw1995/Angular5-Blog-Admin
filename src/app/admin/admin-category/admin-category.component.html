@@ -1,0 +1,73 @@
+<p></p>
+<nz-card [nzLoading]="loading" nzTitle="分类管理">
+  <button nz-button class="link-btn" [nzType]="'primary'" (click)="showModal(false,null)" *ngIf="isAdmin">添加分类</button>
+
+  <nz-popconfirm nzTitle="您确定要删除所有分类吗?" nzOkText="确认" nzCancelText="取消" (nzOnConfirm)="delAllCategorys()" >
+    <button nz-popconfirm nz-button class="link-btn" [nzType]="'danger'" *ngIf="isAdmin" >清空分类</button>
+  </nz-popconfirm>
+  <nz-table
+    [nzShowPagination]="false"
+    #table
+    nzBordered
+    [nzData]="dataSet">
+    <thead>
+    <tr>
+      <th nzWidth="10%">分类ID</th>
+      <th>分类名称</th>
+      <th>创建时间</th>
+      <th nzWidth="10%">条目数</th>
+      <th nzWidth="10%" *ngIf="isAdmin">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of table.data">
+      <td>
+        <div class="cell">
+          <div>
+            {{item['cid']}}
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          {{item['cname']}}
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          {{item['create_time'] | date:'yyyy-MM-dd HH:mm:ss'}}
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          {{item['size']}}
+        </div>
+      </td>
+      <td *ngIf="isAdmin">
+        <div class="cell">
+          <a (click)="showModal(true,item)">编辑</a>
+          <nz-popconfirm nzTitle="您确定要删除该分类吗?" nzOkText="确认" nzCancelText="取消"
+                         (nzOnConfirm)="delCategoryByCid(item['cid'])">
+            <a nz-popconfirm style="color: #ff0000">删除</a>
+          </nz-popconfirm>
+
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+  <nz-modal [(nzVisible)]="isVisible" nzTitle="{{isEdit?'编辑分类':'新增分类'}}" (nzOnCancel)="handleCancel()"
+            (nzOnOk)="handleOk()" nzOkText="{{isEdit?'提交修改':'确认新增'}}">
+    <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm()">
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="cname">分类名称</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input nz-input formControlName="cname" onkeyup="this.value=this.value.replace(/\s+/g,'')" id="cname">
+          <nz-form-explain *ngIf="validateForm.get('cname').dirty && validateForm.get('cname').errors">
+            请输入分类名称!
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </nz-modal>
+</nz-card>

@@ -1,0 +1,66 @@
+<p></p>
+<nz-card [nzLoading]="loading" nzTitle="基本信息">
+  <div nz-row nzType="flex" nzJustify="start" *ngIf="userData">
+    <nz-modal [(nzVisible)]="isVisible" nzTitle="修改账户密码" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
+              [nzOkLoading]="isOkLoading">
+      <div>
+        <p>新的账户密码:</p>
+        <input nz-input placeholder="请输入新的账户密码" [(ngModel)]="password">
+      </div>
+    </nz-modal>
+
+    <div nz-col nzSpan="12">
+      <div>
+        <p>昵称:</p>
+        <input nz-input placeholder="{{userData['data']['nick_name']}}" [(ngModel)]="nick_name">
+      </div>
+      <p></p>
+      <div>
+        <p>个人简介:</p>
+        <!--[(ngModel)]="value"-->
+        <textarea rows="4" nz-input placeholder="{{userData['data']['user_desc']}}" [(ngModel)]="user_desc"></textarea>
+      </div>
+      <p></p>
+      <div>
+        <p>邮箱:</p>
+        <!--[(ngModel)]="value"-->
+        <input nz-input placeholder="{{userData['data']['user_email']}}" [(ngModel)]="user_email">
+      </div>
+      <p></p>
+      <div>
+        <p>住址:</p>
+        <!--[(ngModel)]="value"-->
+        <input nz-input placeholder="{{userData['data']['user_addr']}}" [(ngModel)]="user_addr" >
+      </div>
+      <p></p>
+      <h3 *ngIf="isAdmin">安全设置</h3>
+      <div *ngIf="isAdmin">
+        <p>
+          <span>账户密码:</span>
+          <button (click)="updatePassword()" nz-button nzType="danger" style="margin-left: 10px" ><i
+            class="anticon anticon-edit"></i>修改密码
+          </button>
+        </p>
+        <!--[(ngModel)]="value"-->
+      </div>
+    </div>
+    <div nz-col nzSpan="2"></div>
+    <div nz-col nzSpan="10">
+      <p>用户头像</p>
+      <nz-avatar nzSize="large" nzIcon="anticon anticon-user"
+                 nzSrc="{{userData['data']['user_avator']}}">
+      </nz-avatar>
+      <div>
+        <nz-upload
+          [nzShowUploadList]="false"
+          [nzCustomRequest]="uploadRequest">
+          <button nz-button *ngIf="isAdmin">
+            <i class="anticon anticon-upload"></i><span>更换头像</span>
+          </button>
+        </nz-upload>
+      </div>
+      <button nz-button style="margin-top: 100px;" nzType="primary" (click)="submit()" *ngIf="isAdmin">更新个人信息</button>
+    </div>
+  </div>
+</nz-card>
+

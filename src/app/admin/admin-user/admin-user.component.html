@@ -1,0 +1,67 @@
+<p></p>
+<nz-card nzTitle="用户管理">
+  <!--预留接口并不实现删除用户与清空用户, 没实现操作超级管理员用户体系-->
+  <!--<nz-popconfirm nzTitle="您确定要删除所有用户吗?" nzOkText="确认" nzCancelText="取消" (nzOnConfirm)="delAllUsers()">-->
+  <!--<button nz-popconfirm nz-button class="link-btn" [nzType]="'danger'">清空用户</button>-->
+  <!--</nz-popconfirm>-->
+  <nz-table
+    [nzShowPagination]="false"
+    #table
+    nzBordered
+    [nzData]="dataSet">
+    <thead>
+    <tr>
+      <th nzWidth="10%">用户ID</th>
+      <th>用户名</th>
+      <th>用户昵称</th>
+      <th>登录时间|登录IP</th>
+      <th>用户头像</th>
+      <th>用户简介</th>
+      <th nzWidth="10%">状态</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of table.data">
+      <td>
+        <div class="cell">
+          <div>
+            {{item['ID']}}
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          {{item['UserName']}}
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          {{item['UserInfo']['NickName']}}
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          {{item['LoginTime'] | date:'yyyy-MM-dd HH:mm:ss'}}|{{item['LoginIP']['String']}}
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          <nz-avatar nzSize="large" nzIcon="anticon anticon-link"
+                     nzSrc="{{item['UserInfo']['UserAvator']}}">
+          </nz-avatar>
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          {{item['UserInfo']['UserDesc']}}
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+         <span style="color: #1890ff"> {{item['IsActive'] == 0?'活动':'禁用'}}</span>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</nz-card>

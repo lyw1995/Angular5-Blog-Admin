@@ -1,0 +1,98 @@
+<p></p>
+<nz-card [nzLoading]="loading" nzTitle="友链管理">
+  <button nz-button class="link-btn" [nzType]="'primary'" (click)="showModal(false,null)" *ngIf="isAdmin">添加友链</button>
+
+  <nz-popconfirm nzTitle="您确定要删除所有友链吗?" nzOkText="确认" nzCancelText="取消" (nzOnConfirm)="delAllLinks()">
+    <button nz-popconfirm nz-button class="link-btn" [nzType]="'danger'" *ngIf="isAdmin">清空友链</button>
+  </nz-popconfirm>
+  <nz-table
+    [nzShowPagination]="false"
+    #table
+    nzBordered
+    [nzData]="dataSet">
+    <thead>
+    <tr>
+      <th nzWidth="10%">序列号</th>
+      <th>友链名称</th>
+      <th>友链头像</th>
+      <th>友链地址</th>
+      <th>创建时间</th>
+      <th nzWidth="10%" *ngIf="isAdmin">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of table.data">
+      <td>
+        <div class="cell">
+          <div>
+            {{item['link_id']}}
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          {{item['link_name']}}
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          <nz-avatar nzSize="large" nzIcon="anticon anticon-link"
+                     nzSrc="{{item['link_icon']}}">
+          </nz-avatar>
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          <a target="_blank" href="{{item['link_url']}}"> {{item['link_url']}}</a>
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          {{item['create_time'] | date:'yyyy-MM-dd HH:mm:ss'}}
+        </div>
+      </td>
+      <td *ngIf="isAdmin">
+        <div class="cell">
+          <a (click)="showModal(true,item)">编辑</a>
+          <nz-popconfirm nzTitle="您确定要删除该友链吗?" nzOkText="确认" nzCancelText="取消" (nzOnConfirm)="delLinkByLid(item['link_id'])">
+            <a nz-popconfirm style="color: #ff0000">删除</a>
+          </nz-popconfirm>
+
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+  <nz-modal [(nzVisible)]="isVisible" nzTitle="{{isEdit?'编辑友链':'新增友链'}}" (nzOnCancel)="handleCancel()"
+            (nzOnOk)="handleOk()" nzOkText="{{isEdit?'提交修改':'确认新增'}}">
+    <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm()">
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="linkname">友链名称</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input nz-input formControlName="linkname" id="linkname">
+          <nz-form-explain *ngIf="validateForm.get('linkname').dirty && validateForm.get('linkname').errors">
+            请输入友链名称!
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="linkurl">友链链接</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input nz-input formControlName="linkurl" id="linkurl">
+          <nz-form-explain *ngIf="validateForm.get('linkurl').dirty && validateForm.get('linkurl').errors">
+            请输入友链链接!
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="linkicon">友链图片</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input nz-input formControlName="linkicon" id="linkicon">
+          <nz-form-explain *ngIf="validateForm.get('linkicon').dirty && validateForm.get('linkicon').errors">
+            请输入友链图片!
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </nz-modal>
+</nz-card>

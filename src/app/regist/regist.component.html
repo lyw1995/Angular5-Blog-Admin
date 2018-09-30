@@ -1,0 +1,72 @@
+<form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm()">
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="username">用户名</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24">
+      <input nz-input formControlName="username" id="username">
+      <nz-form-explain *ngIf="validateForm.get('username').dirty && validateForm.get('username').errors">
+        请输入5-12位字母开头的用户名!
+      </nz-form-explain>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="nickname" nzRequired>用户昵称</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24">
+      <input nz-input id="nickname" formControlName="nickname">
+      <nz-form-explain *ngIf="validateForm.get('nickname').dirty && validateForm.get('nickname').errors">请输入5-12用户昵称!
+      </nz-form-explain>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="password" nzRequired>账户密码</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24">
+      <input nz-input type="password" id="password" formControlName="password"
+             (ngModelChange)="updateConfirmValidator()">
+      <nz-form-explain *ngIf="validateForm.get('password').dirty && validateForm.get('password').errors">
+        请输入5-12位字母开头账户密码!
+      </nz-form-explain>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="checkPassword" nzRequired>确认密码</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24">
+      <input nz-input type="password" formControlName="checkPassword" id="checkPassword">
+      <nz-form-explain *ngIf="validateForm.get('checkPassword').dirty && validateForm.get('checkPassword').errors">
+        <ng-container *ngIf="validateForm.get('checkPassword').hasError('required')">
+          请输入5-16位字母开头的确认密码!
+        </ng-container>
+        <ng-container *ngIf="validateForm.get('checkPassword').hasError('confirm')">
+          两次密码输入不一致!
+        </ng-container>
+      </nz-form-explain>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="desc">个人简介</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24">
+      <textarea rows="4" nz-input id="desc" formControlName="desc"></textarea>
+      <nz-form-explain *ngIf="validateForm.get('desc').dirty && validateForm.get('desc').errors">请输入个人简介!
+      </nz-form-explain>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="email">邮箱</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24">
+      <input nz-input id="email" formControlName="email" [(ngModel)]="emailIn">
+      <nz-form-explain *ngIf="validateForm.get('email').dirty && validateForm.get('email').errors">请输入个人邮箱!
+      </nz-form-explain>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="addr">居住地</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24">
+      <input nz-input id="addr" formControlName="addr">
+      <nz-form-explain *ngIf="validateForm.get('addr').dirty && validateForm.get('addr').errors">请输入当前居住地!
+      </nz-form-explain>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-control style="text-align: center;">
+      <button nz-button class="login-form-button" style="width: 50%;" [nzType]="'danger'" >立即注册(不开放)</button>
+    </nz-form-control>
+  </nz-form-item>
+</form>

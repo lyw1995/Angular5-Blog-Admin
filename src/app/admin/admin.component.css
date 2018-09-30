@@ -1,0 +1,24 @@
+:host ::ng-deep .trigger {
+  font-size: 18px;
+  line-height: 64px;
+  padding: 0 24px;
+  cursor: pointer;
+  transition: color .3s;
+}
+
+:host ::ng-deep .trigger:hover {
+  color: #1890ff;
+}
+
+:host ::ng-deep .logo .ant-avatar-image{
+  height: 40px;
+  /*background: rgba(255, 255, 255, .2);*/
+  margin: 16px;
+  background: #F8F8F5;
+}
+.username-text{
+  display: inline-block;
+  line-height: 40px;
+  color: #F8F8F5;
+  margin: 15px 0;
+}

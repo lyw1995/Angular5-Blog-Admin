@@ -1,0 +1,96 @@
+<p></p>
+<nz-card nzTitle="文章管理">
+  <nz-tabset (nzSelectChange)="tabSelect($event)" [(nzSelectedIndex)]="selectIndex">
+    <nz-tab *ngFor="let tab of tabs" [nzTitle]="titleTemplate">
+      <ng-template #titleTemplate>
+        <i [ngClass]="tab.icon"></i>{{ tab.name }}
+      </ng-template>
+      <nz-table
+        [nzTotal]="showTotal"
+        [nzFrontPagination]="false"
+        [(nzPageIndex)]="nzPageIndex"
+        (nzPageIndexChange)="changePage($event)"
+        #table
+        nzBordered
+        [nzData]="dataSet">
+        <thead>
+        <tr>
+          <th nzWidth="10%">文章ID</th>
+          <th nzWidth="20%" nzShowSort [(nzSort)]="sortValue" (click)="sortByCreateTime()">创建时间</th>
+          <th>文章标题</th>
+          <th nzWidth="10%">文章类型</th>
+          <th nzWidth="10%">文章分类</th>
+          <!--nzShowSort [(nzSort)]="pvSort" (click)="sortByViews()" 这个得做数组排序,先不做了-->
+          <th nzWidth="10%" *ngIf="!isDraft" >阅读量</th>
+          <th nzWidth="10%" *ngIf="isAdmin">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let item of table.data">
+          <td>
+            <div class="cell">
+              {{item['aid']}}
+            </div>
+          </td>
+          <td>
+            <div class="cell">
+              {{item['create_time'] | date:'yyyy-MM-dd HH:mm:ss'}}
+            </div>
+          </td>
+          <td>
+            <div class="cell">
+              {{item['title']}}
+            </div>
+          </td>
+          <td>
+            <div class="cell">
+              <a><span class="article-type"
+                       ngClass="{{item['origin'] == 1?'type-1':'type-2'}}">
+                {{item['origin'] == 1?"原":"转"}}</span></a>
+            </div>
+          </td>
+          <td>
+            <div class="cell">
+              <span class="category-type"
+              >  {{findCategoryByCid(item['cid'])}}</span>
+            </div>
+          </td>
+          <td *ngIf="!isDraft">
+            <div class="cell">
+              <i class="anticon anticon-eye" style="margin-right: 5px;"></i>{{item['views']}}
+            </div>
+          </td>
+          <td *ngIf="isAdmin">
+            <div class="cell">
+              <ng-container *ngIf="!isDraft">
+                <a (click)="didUpdate(item)">修改</a>
+                <nz-popconfirm nzTitle="您确定要删除该文章吗?" nzOkText="确认" nzCancelText="取消"
+                               (nzOnConfirm)="delPublishArticle(item['cid'],item['aid'])">
+                  <a nz-popconfirm style="color: #ff0000">删除</a>
+                </nz-popconfirm>
+              </ng-container>
+              <ng-container *ngIf="isDraft">
+                <a (click)="didEdit(item)">编辑</a>
+                <nz-popconfirm nzTitle="您确定要删除该草稿吗?" nzOkText="确认" nzCancelText="取消"
+                               (nzOnConfirm)="delPublishDraft(item['cid'],item['aid'])">
+                  <a nz-popconfirm style="color: #ff0000">删除</a>
+                </nz-popconfirm>
+              </ng-container>
+            </div>
+          </td>
+          <!--<td>-->
+          <!--<div class="cell">-->
+          <!--<a (click)="showModal(true,item)">编辑</a>-->
+          <!--<nz-popconfirm nzTitle="您确定要删除该分类吗?" nzOkText="确认" nzCancelText="取消"-->
+          <!--(nzOnConfirm)="delCategoryByCid(item['cid'])">-->
+          <!--<a nz-popconfirm style="color: #ff0000">删除</a>-->
+          <!--</nz-popconfirm>-->
+
+          <!--</div>-->
+          <!--</td>-->
+        </tr>
+        </tbody>
+      </nz-table>
+    </nz-tab>
+  </nz-tabset>
+</nz-card>
